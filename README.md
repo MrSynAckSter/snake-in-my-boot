@@ -235,7 +235,7 @@ mov    cx,0x3
 int    0x15
 ```
 
-### RET, not RETF###
+### RET, not RETF ###
 Converted 5 retf instructions to ret, not a size optimization, but we definitely don't need far returns
 
 ### 16 bit PUSHA/POPA when possible ###
