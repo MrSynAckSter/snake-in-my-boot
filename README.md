@@ -30,13 +30,13 @@ I wanted to learn about how C interacts with assembly, how they are linked
 together, and what bare-metal C looks like in x86.
 
 # XlogicX Notes Below #
-I forked this project because I was intrigued that someone wrote a boot sector game in c instead of assembly. I wanted to disasemble the compiled game and see how the code was generated (snake.asm). I think this was of interest of the original author as well; they did the project in c as an educational process to learn more about how it gets compiled.
+I forked this project because I was intrigued that someone wrote a boot sector game in c instead of assembly. I wanted to dissemble the compiled game and see how the code was generated (snake.asm). I think this was of interest of the original author as well; they did the project in c as an educational process to learn more about how it gets compiled.
 
-My next goal after getting some assembly that I could actually assemble with nasm (not trivial actually) was to see if there was any of it that could be optimized (snake2.asm). I said the first part isn't trivial not just becuase of some objdump syntax that needed to be converted, but that there is also an implicit data area of the game that is instead disasembled into instructions.
+My next goal after getting some assembly that I could actually assemble with nasm (not trivial actually) was to see if there was any of it that could be optimized (snake2.asm). I said the first part isn't trivial not just because of some objdump syntax that needed to be converted, but that there is also an implicit data area of the game that is instead dissembled into instructions.
 
 It turns out that there were MASSIVE opportunities for optimization. In this process, my main goal was to try to stay true to the original games design and algorithms, this is because the goal was to optimize what the compiler did, not the author. I made one exception to the gameover sequence, instead of shutting the whole computer down after losing, I just reset it instead (this is a common design choice with us boot sector game programmers).
 
-Before getting into the details, let's talk about the numbers. A boot sector game is a 512 byte image; it can be no larger. The original game compiles to 468 bytes, which isn't terrible, as it gives plenty of room to spare. That said, with some mostly simple optimizations, I was able to get it down to 290 bytes (shaving off 178 bytes of crap). This means that nearly 40% of the program that c created was unessesary garbage. Quite a claim.
+Before getting into the details, let's talk about the numbers. A boot sector game is a 512 byte image; it can be no larger. The original game compiles to 468 bytes, which isn't terrible, as it gives plenty of room to spare. That said, with some mostly simple optimizations, I was able to get it down to 290 bytes (shaving off 178 bytes of crap). This means that nearly 40% of the program that c created was unnecessary garbage. Quite a claim.
 
 ## Optimizations ##
 
@@ -138,7 +138,7 @@ push   eax
 ````
 
 ### 32 bit to 16 bit Pointers ###
-Similar to the above optimizaiton, but for pointer, not register
+Similar to the above optimization, but for pointer, not register
 ```assembly
 mov    DWORD [0x7e00],0x6
 mov    BYTE [0x7e00],0x6
@@ -228,20 +228,20 @@ int    0x15
 ```
 
 ### RET, not RETF###
-Converted 5 retf instructions to ret, not a size optimization, but we definetely don't need far returns
+Converted 5 retf instructions to ret, not a size optimization, but we definitely don't need far returns
 
 ### 16 bit PUSHA/POPA when possible ###
-Converted 2 pushad/popad instructions to pusha/popa, again, to remove those 0x66 prefix bytes. This wasn't done globally throughout the game, as this does affect the stack alignment, and can mess up the game if not handled carefully. In fact, the 32 bit register push's that I converted were'nt done naively, I had to adjust some stack variable addresses to keep aligned.
+Converted 2 pushad/popad instructions to pusha/popa, again, to remove those 0x66 prefix bytes. This wasn't done globally throughout the game, as this does affect the stack alignment, and can mess up the game if not handled carefully. In fact, the 32 bit register push's that I converted weren't done naively, I had to adjust some stack variable addresses to keep aligned.
 
 ### Good Enough ###
-Use 'Good Enough' Value in upper byte of 16-bit register. There's a routine that starts at a coordinate just below the playable game area and clears the rest of the screen black. The exact amount of 'pixels' that we need cleared is 0x424. But we could just as easily do 0x500 and clear past the viewable area with no noticable differences to the player. If we do that, we can just write 0x5 to the upper byte of cx (ch). This saves a byte due to the immedaite encoding of a byte instead of a word.
+Use 'Good Enough' Value in upper byte of 16-bit register. There's a routine that starts at a coordinate just below the playable game area and clears the rest of the screen black. The exact amount of 'pixels' that we need cleared is 0x424. But we could just as easily do 0x500 and clear past the viewable area with no noticeable differences to the player. If we do that, we can just write 0x5 to the upper byte of cx (ch). This saves a byte due to the immediate encoding of a byte instead of a word.
 ```assembly
 mov    cx,0x424
 mov    ch,0x5
 ```
 
-### Rearange Subs ###
-Moved subroutines arround for near calls, instead of full dword addresses. In the worst case we could have converted the dword calls to word calls. But the goal is always to get a relative call to somewhere less than 127 bytes away, so you can just use a byte. So I removed 8 'call dword' instructions and moved the following subroutines (names from my asm version):
+### Rearrange Subs ###
+Moved subroutines around for near calls, instead of full dword addresses. In the worst case we could have converted the dword calls to word calls. But the goal is always to get a relative call to somewhere less than 127 bytes away, so you can just use a byte. So I removed 8 'call dword' instructions and moved the following subroutines (names from my asm version):
 	readkey
 	check_keys
 	sleep
