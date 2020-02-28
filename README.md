@@ -29,7 +29,7 @@ I didn't want to.
 I wanted to learn about how C interacts with assembly, how they are linked
 together, and what bare-metal C looks like in x86.
 
-## XlogicX Notes Below ##
+# XlogicX Notes Below #
 I forked this project because I was intrigued that someone wrote a boot sector game in c instead of assembly. I wanted to disasemble the compiled game and see how the code was generated (snake.asm). I think this was of interest of the original author as well; they did the project in c as an educational process to learn more about how it gets compiled.
 
 My next goal after getting some assembly that I could actually assemble with nasm (not trivial actually) was to see if there was any of it that could be optimized (snake2.asm). I said the first part isn't trivial not just becuase of some objdump syntax that needed to be converted, but that there is also an implicit data area of the game that is instead disasembled into instructions.
@@ -131,7 +131,7 @@ push   eax
 	push   ax
 	push   ax
 	movsx  eax,WORD [ebx+ebx*1+0x7e20]
-    push   dword 0xf
+        push   dword 0xf
 	inc    bx
 	push   ax
 	push   ax
