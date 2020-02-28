@@ -221,7 +221,7 @@ A lot of us in the boot sector gaming community get extra squirly when clearing 
 ```assembly
 cbw
 ```
-This trick clears ah to 0 when al is below 128, otherwise it sets ah to all 1's. Sound to obscure? Clearing ah to 0 is more common in boot sector gaming, as it is where colors are held in textmode, and cldearing ah sets a black background.
+This trick clears ah to 0 when al is below 128, otherwise it sets ah to all 1's. This insctruction only takes 1 byte to encode. Sound to obscure? Clearing ah to 0 is more common in boot sector gaming, as it is where colors are held in textmode, and cldearing ah sets a black background.
 
 ### Better GameOver ###
 Replaced Shutdown (gameover) routine with just an int 0x19 reboot. Though this shaves some bytes, it's not why I did it. I just found it irritating that the game went through a 'complex' and proper shutdown routine when a simple reboot is much more convenient for the gamer. This is the only functionality exception that I took with this game.
