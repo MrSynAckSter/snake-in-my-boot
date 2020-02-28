@@ -250,8 +250,8 @@ mov    ch,0x5
 
 ### Rearrange Subs ###
 Moved subroutines around for near calls, instead of full dword addresses. In the worst case we could have converted the dword calls to word calls. But the goal is always to get a relative call to somewhere less than 127 bytes away, so you can just use a byte. So I removed 8 'call dword' instructions and moved the following subroutines (names from my asm version):
-	readkey
-	check_keys
-	sleep
-	draw_cell+draw_line (moved near end as they were called near end)
-	clear_screen (same situation as draw_cell)
+* readkey
+* check_keys
+* sleep
+* draw_cell+draw_line (moved near end as they were called near end)
+* clear_screen (same situation as draw_cell)
