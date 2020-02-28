@@ -1,4 +1,4 @@
-# Snake in my Boot
+# Snake in my Boot (Original w-shackleton README section)
 
 An implementation of Snake written in bare-metal / BIOS x86 assembly and C that
 fits into an MBR bootloader.
