@@ -38,11 +38,13 @@ It turns out that there were MASSIVE opportunities for optimization. In this pro
 
 Before getting into the details, let's talk about the numbers. A boot sector game is a 512 byte image; it can be no larger. The original game compiles to 468 bytes, which isn't terrible, as it gives plenty of room to spare. That said, with some mostly simple optimizations, I was able to get it down to 290 bytes (shaving off 178 bytes of crap). This means that nearly 40% of the program that c created was unessesary garbage. Quite a claim.
 
-Optimizations:
+## Optimizations ##
 
 The first optimization to discuss is a mostly simple one, it's a situation that could have possibly been avoided with the right nasm and gcc calls in the original makefile. I noticed that the make file has some 'nasm -f elf32' in it, when I usually do 'nasm -f bin.' I did see -m16 for gcc, which is important. I say this because it appears that the make process took every chance it could to use full 32 bit registers. The problem with this is how the machine-code is encoded in 16-bit mode. Generally, Whether using 32 bit or 16 bit registers, the encoding for the machine instruction is the same (not so for 8 bit). When in 32 bit mode, if you wanted to us a 16 bit register instead, you need to encode a 1 byte override prefix of 0x66. If in 16 bit mode, you need to use that prefix to get 32 bit registers. So, this means that the 0x66 byte is littered all over our output program, and we don't even need the full 32 bit registers! So a major optimization is to convert those instructions to the 16 bit counterparts. Below are some of the examples:
+```assembly
 mov    esp,0x7c00
 mov    sp,0x7c00
+````
 
 mov    ebp,esp
 mov    bp,sp
